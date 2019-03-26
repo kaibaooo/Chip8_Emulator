@@ -34,12 +34,12 @@ void Chip8::initialize() {
     for (int i = 0; i < 80; i++) {
         memory[i] = chip8_fontset[i];
     }
-    //??
     srand(time(NULL));
 }
 void Chip8::emulateCycle() {
     // fetch
     opcode = memory[pc] << 8 | memory[pc + 1];
+    print("Current opcode : 0x%X\n", opcode);
     // decode
     switch (opcode & 0xF000) {
     case 0x0000:
@@ -63,6 +63,7 @@ void Chip8::emulateCycle() {
             print("Error! Unknown opcode 0x%X\n", opcode);
             break;
         }
+        break;
     case 0x1000:
         // 1NNN goto NNN
         pc = opcode & 0x0FFF;
@@ -178,14 +179,29 @@ void Chip8::emulateCycle() {
             break;
         }
     case 0x9000:
-
-        pc += 2;
+        // 9XY0 Skips the next instruction if VX doesn¡¦t equal VY
+        if (reg[(opcode & 0x0F00) >> 8] != reg[(opcode & 0x00F0) >> 4]) {
+            pc += 4;
+        }
+        else{
+            pc += 2;
+        }
         break;
     case 0xA000:
+        // ANNN Sets I to the address NNN.
         I = opcode & 0x0FFF;
         pc += 2;
         break;
-    case 0xD000: 
+    case 0xB000:
+        // BNNN Jumps to the address NNN plus V0.
+        pc = reg[0x0] + (opcode & 0x0FFF);
+        break;
+    case 0xC000:
+        // CXNN
+        reg[(opcode & 0x0F00) >> 8] = (rand() % 256) & reg[(opcode & 0x00FF)];
+        pc += 2;
+        break;
+    case 0xD000:{
         // DXYN
         // draw(Vx,Vy,N)
         unsigned char x = (opcode & 0x0F00) >> 8;
@@ -196,17 +212,18 @@ void Chip8::emulateCycle() {
         for (int i = 0; i < height; i++) {
             rowPixel = memory[I + i];
             for (int j = 0; j < 8; j++) {
-                if (rowPixel & (0x80 >> i) != 0) {
-                    if (gfx[x + i + (y + j) * 64]) {
-                        reg[0xF] = 0;
+                if ((rowPixel & (0x80 >> j)) != 0) {
+                    if (gfx[x + j + (y + i) * 64] == 1) {
+                        reg[0xF] = 1;
                     }
-                    gfx[x + i + (y + j) * 64] ^= 1;
+                    gfx[x + j + (y + i) * 64] ^= 1;
                 }
             }
         }
         drawFlag = true;
         pc += 2;
         break;
+    }
     case 0xE000:
         switch (opcode & 0x00FF) {
         case 0x009E:
@@ -222,17 +239,79 @@ void Chip8::emulateCycle() {
         case 0x00A1:
             // EXA1 if(key()!=Vx)    
             // Skips the next instruction if the key stored in VX isn¡¦t pressed
+            if (key[reg[(opcode & 0x0F00) >> 8]] == 0) {
+                pc += 4;
+            }
+            else {
+                pc += 2;
+            }
             break;
         }
     case 0xF000:
         switch (opcode & 0x00FF) {
+        case 0x0007:
+            // FX07 Sets VX to the value of the delay timer
+            reg[(opcode & 0x0F00) >> 8] = delay_timer;
+            pc += 2;
+            break;
+        case 0x000A:{
+            // FX0A A key press is awaited, and then stored in VX
+            bool keyPress = false;
+            for (int i = 0; i < 16; i++) {
+                if (key[i] != 0) {
+                    reg[(opcode & 0x0F00) >> 8] = i;
+                    keyPress = true;
+                }
+            }
+            if (!keyPress) return;
+            pc += 2;
+            break;
+        }
+        case 0x0015:
+            // FX15 Sets the delay timer to VX.
+            delay_timer = reg[(opcode & 0x0F00) >> 8];
+            pc += 2;
+            break;
+        case 0x0018:
+            // FX18 Sets the sound timer to VX.
+            sound_timer = reg[(opcode & 0x0F00) >> 8];
+            pc += 2;
+            break;
+        case 0x001E:
+            // FX1E Adds VX to I
+            I+= reg[(opcode & 0x0F00) >> 8];
+            pc += 2;
+            break;
+        case 0x0029:
+            // ??
+            // FX29 Sets I to the location of the sprite for the character in VX.
+            I = reg[(opcode & 0x0F00) >> 8] * 0x5;
+            pc += 2;
+            break;
         case 0x0033:
+            // FX33
             memory[I] = reg[(opcode & 0x0F00) >> 8] / 100;
             memory[I + 1] = reg[(opcode & 0x0F00) >> 8] % 100 / 10;
             memory[I + 2] = reg[(opcode & 0x0F00) >> 8] % 10;
             pc += 2;
         }
         break;
+        case 0x0055:
+            // FX55
+            for (int i = 0; i <= ((opcode & 0x0F00) >> 8); i++) {
+                memory[I + i] = reg[i];
+            }
+            I += ((opcode & 0x0F00) >> 8) + 1;
+            pc += 2;
+            break;
+        case 0x0065:
+            // FX65
+            for (int i = 0; i <= ((opcode & 0x0F00) >> 8); i++) {
+                reg[i] = memory[I + i];
+            }
+            I += ((opcode & 0x0F00) >> 8) + 1;
+            pc += 2;
+            break;
     default:
         print("Error! Unknown opcode 0x%X\n", opcode & 0x0FFF);
         break;
@@ -240,7 +319,11 @@ void Chip8::emulateCycle() {
     // timer--
     if (delay_timer > 0)
         delay_timer--;
-    
+    if (sound_timer > 0) {
+        if (sound_timer == 1)
+            printf("BEEP!\n");
+        sound_timer--;
+    }
     
 }
 void Chip8::loadGame(const char *filename) {
@@ -251,7 +334,7 @@ void Chip8::loadGame(const char *filename) {
     long fileSize = ftell(filePtr);
     fseek(filePtr, 0L, SEEK_SET);
     print("File Size : %d\n", fileSize);
-    if (fileSize < (4096 - 512)) {
+    if (fileSize > (4096 - 512)) {
         print("File is too big\n");
         return;
     }
@@ -263,4 +346,18 @@ void Chip8::loadGame(const char *filename) {
     }
     print("Loaded!\n");
     
+}
+void Chip8::renderTest() {
+    for (int y = 0; y < 32; y++) {
+        for (int x = 0; x < 64; x++) {
+            if (gfx[x + y * 64]) {
+                printf(" ");
+            }
+            else {
+                printf("O");
+            }
+        }
+        printf("\n");
+    }
+    printf("\n");
 }

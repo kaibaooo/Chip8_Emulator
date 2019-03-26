@@ -57,4 +57,5 @@ public:
     void loadGame(const char *);
     void emulateCycle();
     void setKeys();
+    void renderTest();
 };
