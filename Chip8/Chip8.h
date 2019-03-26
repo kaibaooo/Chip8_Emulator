@@ -2,6 +2,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
+#pragma warning(disable:4996)
+#define print printf
 class Chip8 {
 public:
     //opcode
@@ -32,7 +34,7 @@ public:
     
     Chip8();
     void initialize();
-    void loadGame(char *);
+    void loadGame(const char *);
     void emulateCycle();
     void setKeys();
 };
