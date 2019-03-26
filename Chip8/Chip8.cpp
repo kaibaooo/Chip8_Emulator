@@ -32,7 +32,7 @@ void Chip8::initialize() {
     }
     //load fontset
     for (int i = 0; i < 80; i++) {
-
+        memory[i] = chip8_fontset[i];
     }
     //??
     srand(time(NULL));
@@ -63,10 +63,10 @@ void Chip8::emulateCycle() {
         switch (opcode & 0x000F) {
         case 0x0004: //Vx += Vy
             if (reg[(opcode & 0x00F0) >> 4] > reg[(opcode & 0x0F00) >> 8]) {
-                reg[0x000F] = 1;
+                reg[0xF] = 1;
             }
             else {
-                reg[0x000F] = 0;
+                reg[0xF] = 0;
             }
             reg[(opcode & 0x0F00) >> 8] += reg[(opcode & 0x00F0) >> 4];
             pc += 2;
@@ -75,6 +75,29 @@ void Chip8::emulateCycle() {
     case 0xA000:
         I = opcode & 0x0FFF;
         pc += 2;
+        break;
+    case 0xD000: 
+        // DXYN
+        // draw(Vx,Vy,N)
+        unsigned char x = (opcode & 0x0F00) >> 8;
+        unsigned char y = (opcode & 0x00F0) >> 4;
+        unsigned char height = (opcode & 0x000F);
+        unsigned rowPixel;
+        reg[0xF] = 0;
+        for (int i = 0; i < height; i++) {
+            rowPixel = memory[I + i];
+            for (int j = 0; j < 8; j++) {
+                if (rowPixel & (0x80 >> i) != 0) {
+                    if (gfx[x + i + (y + j) * 64]) {
+                        reg[0xF] = 0;
+                    }
+                    gfx[x + i + (y + j) * 64] ^= 1;
+                }
+            }
+        }
+        drawFlag = true;
+        pc += 2;
+        break;
     case 0xF000:
         switch (opcode & 0x00FF) {
         case 0x0033:
