@@ -45,24 +45,95 @@ void Chip8::emulateCycle() {
     case 0x0000:
         switch (opcode & 0x000F) {
         case 0x0000:
-            // disp_clear() <=======
+            // 00E0 disp_clear() 
+            for (int i = 0; i < 2048; i++) {
+                gfx[i] = 0x0;
+            }
+            drawFlag = true;
+            pc += 2;
             break;
         case 0x000E:
+            // 00EE
             // return; <=======
+            sp--;
+            pc = stack[sp];
+            pc += 2;
             break;
         default:
             print("Error! Unknown opcode 0x%X\n", opcode);
             break;
         }
     case 0x1000:
-        stack[sp] = pc; //record current runtine
+        // 1NNN goto NNN
+        pc = opcode & 0x0FFF;
+        break;
+    case 0x2000:
+        // 2NNNN call subroutine at NNN
+        stack[sp] = pc; //store current runtine
         sp++;
         pc = opcode & 0x0FFF;
         break;
+    case 0x3000:
+        // 3XNN Skips the next instruction if VX equals NN. 
+        if (reg[(opcode & 0x0F00) >> 8] == (opcode & 0x00FF)) {
+            pc += 4;
+        }
+        else {
+            pc += 2;
+        }
+        break;
+    case 0x4000:
+        // 4XNN Skips the next instruction if VX doesn¡¦t equal NN.
+        if (reg[(opcode & 0x0F00) >> 8] != (opcode & 0x00FF)) {
+            pc += 4;
+        }
+        else {
+            pc += 2;
+        }
+        break;
+    case 0x5000:
+        // 5XY0 Skips the next instruction if VX equals VY. 
+        if (reg[(opcode & 0x0F00) >> 8] == reg[(opcode & 0x00F0) >> 4]) {
+            pc += 4;
+        }
+        else {
+            pc += 2;
+        }
+        break;
+    case 0x6000:
+        // 6XNN Sets VX to NN.
+        reg[(opcode & 0x0F00) >> 8] = (opcode & 0x00FF);
+        pc += 2;
+        break;
+    case 0x7000:
+        // 7XNN Adds NN to VX. (Carry flag is not changed)
+        reg[(opcode & 0x0F00) >> 8] = (opcode & 0x00FF);
+        pc += 2;
+        break;
     case 0x8000:
         switch (opcode & 0x000F) {
+        case 0x0000:
+            // 8XY0 Sets VX to the value of VY.
+            reg[(opcode & 0x0F00) >> 8] = reg[(opcode & 0x00F0) >> 4];
+            pc += 2;
+            break;
+        case 0x0001:
+            // 8XY1 VX = VX or VY
+            reg[(opcode & 0x0F00) >> 8] |= reg[(opcode & 0x00F0) >> 4];
+            pc += 2;
+            break;
+        case 0x0002:
+            // 8XY2 VX = VX&VY
+            reg[(opcode & 0x0F00) >> 8] &= reg[(opcode & 0x00F0) >> 4];
+            pc += 2;
+            break;
+        case 0x0003:
+            // 8XY2 VX = VX^VY
+            reg[(opcode & 0x0F00) >> 8] ^= reg[(opcode & 0x00F0) >> 4];
+            pc += 2;
+            break;
         case 0x0004: //Vx += Vy
-            if (reg[(opcode & 0x00F0) >> 4] > reg[(opcode & 0x0F00) >> 8]) {
+            if (reg[(opcode & 0x00F0) >> 4] > (0xFF - reg[(opcode & 0x0F00) >> 8])) {
                 reg[0xF] = 1;
             }
             else {
@@ -71,7 +142,45 @@ void Chip8::emulateCycle() {
             reg[(opcode & 0x0F00) >> 8] += reg[(opcode & 0x00F0) >> 4];
             pc += 2;
             break;
+        case 0x0005:
+            // 8XY5 Vx -= Vy
+            if (reg[(opcode & 0x00F0) >> 4] > reg[(opcode & 0x0F00) >> 8]) {
+                reg[0xF] = 0;
+            }
+            else {
+                reg[0xF] = 1;
+            }
+            reg[(opcode & 0x0F00) >> 8] -= reg[(opcode & 0x00F0) >> 4];
+            pc += 2;
+            break;
+        case 0x0006:
+            // 8XY6 Vx>>=1
+            reg[0xF] = reg[(opcode & 0x0F00) >> 8] & 0x1;
+            reg[(opcode & 0x0F00) >> 8] >>= 1;
+            pc += 2;
+            break;
+        case 0x0007:
+            // 8XY7 Vx=Vy-Vx
+            if (reg[(opcode & 0x0F00) >> 8] > reg[(opcode & 0x00F0) >> 4]) {
+                reg[0xF] = 0;
+            }
+            else {
+                reg[0xF] = 1;
+            }
+            reg[(opcode & 0x0F00) >> 8] = reg[(opcode & 0x00F0) >> 4] - reg[(opcode & 0x0F00) >> 8];
+            pc += 2;
+            break;
+        case 0x000E:
+            // 8XYE Vx<<=1
+            reg[0xF] = reg[(opcode & 0x0F00) >> 8] & 0x80;
+            reg[(opcode & 0x0F00) >> 8] <<= 1;
+            pc += 2;
+            break;
         }
+    case 0x9000:
+
+        pc += 2;
+        break;
     case 0xA000:
         I = opcode & 0x0FFF;
         pc += 2;
@@ -98,6 +207,23 @@ void Chip8::emulateCycle() {
         drawFlag = true;
         pc += 2;
         break;
+    case 0xE000:
+        switch (opcode & 0x00FF) {
+        case 0x009E:
+            // EX9E if(key()==Vx)
+            // Skips the next instruction if the key stored in VX is pressed.
+            if (key[reg[(opcode & 0x0F00) >> 8]] != 0) {
+                pc += 4;
+            }
+            else {
+                pc += 2;
+            }
+            break;
+        case 0x00A1:
+            // EXA1 if(key()!=Vx)    
+            // Skips the next instruction if the key stored in VX isn¡¦t pressed
+            break;
+        }
     case 0xF000:
         switch (opcode & 0x00FF) {
         case 0x0033:
@@ -106,6 +232,7 @@ void Chip8::emulateCycle() {
             memory[I + 2] = reg[(opcode & 0x0F00) >> 8] % 10;
             pc += 2;
         }
+        break;
     default:
         print("Error! Unknown opcode 0x%X\n", opcode & 0x0FFF);
         break;
