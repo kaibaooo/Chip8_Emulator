@@ -1,3 +1,2 @@
-﻿  Chip8.cpp
-d:\github\chip8_emulator\chip8\chip8.cpp(37): warning C4244: '引數': 將 'time_t' 轉換為 'unsigned int'，由於類型不同，可能導致資料遺失
-  Chip8.vcxproj -> D:\Github\Chip8_Emulator\x64\Debug\Chip8.exe
+﻿  Source.cpp
+  Chip8.vcxproj -> C:\Users\Admin\Desktop\Chip8_Emulator\x64\Debug\Chip8.exe

@@ -1,7 +1,7 @@
 #include"Chip8.h"
 
 Chip8::Chip8() {
-
+    
 }
 
 void Chip8::initialize() {
@@ -204,14 +204,19 @@ void Chip8::emulateCycle() {
     case 0xD000:{
         // DXYN
         // draw(Vx,Vy,N)
-        unsigned char x = (opcode & 0x0F00) >> 8;
-        unsigned char y = (opcode & 0x00F0) >> 4;
-        unsigned char height = (opcode & 0x000F);
-        unsigned rowPixel;
+        unsigned short x = reg[(opcode & 0x0F00) >> 8];
+        unsigned short y = reg[(opcode & 0x00F0) >> 4];
+        unsigned short height = (opcode & 0x000F);
+        unsigned short rowPixel;
         reg[0xF] = 0;
         for (int i = 0; i < height; i++) {
+            
             rowPixel = memory[I + i];
+            //print("I=%d\n", I);
+            //print("rowPixel=%X\n", rowPixel);
             for (int j = 0; j < 8; j++) {
+                //print("rowPixel=%X\n", rowPixel);
+                //print("current in 0x%X\n", (rowPixel & (0x80 >> j)) );
                 if ((rowPixel & (0x80 >> j)) != 0) {
                     if (gfx[x + j + (y + i) * 64] == 1) {
                         reg[0xF] = 1;
@@ -327,6 +332,7 @@ void Chip8::emulateCycle() {
     
 }
 void Chip8::loadGame(const char *filename) {
+    initialize();
     print("Load Game : %s\n", filename);
     FILE *filePtr = fopen(filename, "rb");
     // get file size
@@ -351,10 +357,10 @@ void Chip8::renderTest() {
     for (int y = 0; y < 32; y++) {
         for (int x = 0; x < 64; x++) {
             if (gfx[x + y * 64]) {
-                printf(" ");
+                printf("O");
             }
             else {
-                printf("O");
+                printf(" ");
             }
         }
         printf("\n");
