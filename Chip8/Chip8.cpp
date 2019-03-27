@@ -39,7 +39,7 @@ void Chip8::initialize() {
 void Chip8::emulateCycle() {
     // fetch
     opcode = memory[pc] << 8 | memory[pc + 1];
-    print("Current opcode : 0x%X\n", opcode);
+    //print("Current opcode : 0x%X\n", opcode);
     // decode
     switch (opcode & 0xF000) {
     case 0x0000:

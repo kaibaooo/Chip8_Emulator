@@ -21,7 +21,8 @@ int main() {
         chip8.memory[0x207 + i * 8] = 0x15;
     }
     
-    
+    chip8.memory[0x241] = 0x00;
+    chip8.memory[0x242] = 0x0A;
     
     /*
     // register 0 => x cord
@@ -55,16 +56,18 @@ int main() {
     system("pause");
 
     for(;;){
+        chip8.emulateCycle();
         if (chip8.drawFlag) {
             system("cls");
+            chip8.renderTest();
             chip8.drawFlag = false;
         }
-        chip8.emulateCycle();
-        chip8.renderTest();
+        
+        
 
         
-        print("Prev opcode 0x%X\n", chip8.opcode);
-        system("pause");
+        //print("Prev opcode 0x%X\n", chip8.opcode);
+        //system("pause");
         
     }
     system("pause");
