@@ -42,7 +42,7 @@ void Chip8::initialize() {
 void Chip8::emulateCycle() {
     // fetch
     opcode = memory[pc] << 8 | memory[pc + 1];
-    //print("Current opcode : 0x%X\n", opcode);
+    print("0x%X\n", opcode);
     // decode
     switch (opcode & 0xF000) {
     case 0x0000:
@@ -57,7 +57,7 @@ void Chip8::emulateCycle() {
             break;
         case 0x000E:
             // 00EE
-            // return; <=======
+            // return; 
             sp--;
             pc = stack[sp];
             pc += 2;
@@ -111,7 +111,7 @@ void Chip8::emulateCycle() {
         break;
     case 0x7000:
         // 7XNN Adds NN to VX. (Carry flag is not changed)
-        reg[(opcode & 0x0F00) >> 8] = (opcode & 0x00FF);
+        reg[(opcode & 0x0F00) >> 8] += (opcode & 0x00FF);
         pc += 2;
         break;
     case 0x8000:
@@ -159,8 +159,16 @@ void Chip8::emulateCycle() {
             break;
         case 0x0006:
             // 8XY6 Vx>>=1
-            reg[0xF] = reg[(opcode & 0x0F00) >> 8] & 0x1;
+            if (reg[(opcode & 0x0F00) >> 8] & 0x1 == 0x1) {
+                reg[0xF] = 0x1;
+            }
+            else {
+                reg[(opcode & 0x0F00) >> 8] >>= 1;
+            }
+            /*
+            reg[0xF] = reg[(opcode & 0x0F00) >> 8] & 0x0001;
             reg[(opcode & 0x0F00) >> 8] >>= 1;
+            */
             pc += 2;
             break;
         case 0x0007:
@@ -302,8 +310,7 @@ void Chip8::emulateCycle() {
             memory[I + 1] = reg[(opcode & 0x0F00) >> 8] % 100 / 10;
             memory[I + 2] = reg[(opcode & 0x0F00) >> 8] % 10;
             pc += 2;
-        }
-        break;
+            break;
         case 0x0055:
             // FX55
             for (int i = 0; i <= ((opcode & 0x0F00) >> 8); i++) {
@@ -320,6 +327,9 @@ void Chip8::emulateCycle() {
             I += ((opcode & 0x0F00) >> 8) + 1;
             pc += 2;
             break;
+        }
+        break;
+        
     default:
         print("Error! Unknown opcode 0x%X\n", opcode & 0x0FFF);
         break;

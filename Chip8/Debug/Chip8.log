@@ -1,7 +1,9 @@
-﻿  Source.cpp
-d:\github\chip8_emulator\chip8\source.cpp(70): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
-d:\github\chip8_emulator\chip8\source.cpp(71): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
-d:\github\chip8_emulator\chip8\source.cpp(72): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
-d:\github\chip8_emulator\chip8\source.cpp(73): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
-  Chip8.vcxproj -> D:\Github\Chip8_Emulator\Debug\Chip8.exe
+﻿  Chip8.cpp
+c:\users\admin\desktop\chip8_emulator\chip8\chip8.cpp(40): warning C4244: '引數': 將 'time_t' 轉換為 'unsigned int'，由於類型不同，可能導致資料遺失
+c:\users\admin\desktop\chip8_emulator\chip8\chip8.cpp(162): warning C4554: '&': 檢查運算子優先順序找出可能發生的錯誤; 使用括號釐清順序
+c:\users\admin\desktop\chip8_emulator\chip8\chip8.cpp(389): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
+c:\users\admin\desktop\chip8_emulator\chip8\chip8.cpp(390): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
+c:\users\admin\desktop\chip8_emulator\chip8\chip8.cpp(391): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
+c:\users\admin\desktop\chip8_emulator\chip8\chip8.cpp(392): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
+  Chip8.vcxproj -> C:\Users\Admin\Desktop\Chip8_Emulator\Debug\Chip8.exe
   複製了         1 個檔案。
