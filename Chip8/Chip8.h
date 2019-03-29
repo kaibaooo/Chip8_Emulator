@@ -2,8 +2,12 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
+#include <GL/glut.h>
 #pragma warning(disable:4996)
 #define print printf
+#define wPx 0.15625
+#define hPx 0.3125
+
 class Chip8 {
 public:
     //fontset
@@ -57,5 +61,7 @@ public:
     void loadGame(const char *);
     void emulateCycle();
     void setKeys();
+    void OpenGLrender();
     void renderTest();
+    void OpenGLInit();
 };

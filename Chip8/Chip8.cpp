@@ -1,5 +1,8 @@
 #include"Chip8.h"
 
+void init();
+void display();
+
 Chip8::Chip8() {
     
 }
@@ -366,4 +369,31 @@ void Chip8::renderTest() {
         printf("\n");
     }
     printf("\n");
+}
+void Chip8::OpenGLrender() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    glColor3f(1.0, 1.0, 1.0);
+    for (int i = 0; i < 1280; i += 20) {
+        for (int j = 0; j < 640; j++) {
+            glBegin(GL_POLYGON); {
+                glVertex3f(-5.0 + j, 5.0 - i, 0.0); // The top left corner  
+                glVertex3f(wPx - 5 + j, 5.0 - i, 0.0); // The top right corner 
+                glVertex3f(-5.0 + j, 5 - hPx - i, 0.0); // The bottom left corner  
+                glVertex3f(wPx - 5 + j, 5 - hPx - i, 0.0); // The bottom right corner
+
+            }
+            glEnd();
+            glFlush();
+        }
+    }
+    
+}
+
+
+void Chip8::OpenGLInit() {
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glMatrixMode(GL_PROJECTION);
+    glOrtho(-5, 5, -5, 5, 5, 15);
+    glMatrixMode(GL_MODELVIEW);
+    gluLookAt(0, 0, 10, 0, 0, 0, 0, 1, 0);
 }

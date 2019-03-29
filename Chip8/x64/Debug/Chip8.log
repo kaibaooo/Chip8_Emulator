@@ -1,2 +1,17 @@
 ﻿  Source.cpp
-  Chip8.vcxproj -> D:\Github\Chip8_Emulator\x64\Debug\Chip8.exe
+d:\github\chip8_emulator\chip8\source.cpp(60): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
+d:\github\chip8_emulator\chip8\source.cpp(61): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
+d:\github\chip8_emulator\chip8\source.cpp(62): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
+d:\github\chip8_emulator\chip8\source.cpp(63): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
+d:\github\chip8_emulator\chip8\source.cpp(72): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
+d:\github\chip8_emulator\chip8\source.cpp(73): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
+d:\github\chip8_emulator\chip8\source.cpp(74): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
+d:\github\chip8_emulator\chip8\source.cpp(75): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
+Source.obj : error LNK2019: 無法解析的外部符號 __imp_glutInitWindowPosition 在函式 main 中被參考
+Source.obj : error LNK2019: 無法解析的外部符號 __imp_glutInitWindowSize 在函式 main 中被參考
+Source.obj : error LNK2019: 無法解析的外部符號 __imp_glutInitDisplayMode 在函式 main 中被參考
+Source.obj : error LNK2019: 無法解析的外部符號 __imp_glutMainLoop 在函式 main 中被參考
+Source.obj : error LNK2019: 無法解析的外部符號 __imp_glutDisplayFunc 在函式 main 中被參考
+Source.obj : error LNK2019: 無法解析的外部符號 __imp___glutCreateWindowWithExit 在函式 glutCreateWindow_ATEXIT_HACK 中被參考
+D:\Github\Chip8_Emulator\Chip8\freeglut\lib\freeglut.lib : warning LNK4272: 程式庫電腦類型 'x86' 與目標電腦類型 'x64' 發生衝突
+D:\Github\Chip8_Emulator\x64\Debug\Chip8.exe : fatal error LNK1120: 6 個無法解析的外部符號
