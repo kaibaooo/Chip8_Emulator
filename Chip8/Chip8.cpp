@@ -69,6 +69,7 @@ void Chip8::emulateCycle() {
         break;
     case 0x1000:
         // 1NNN goto NNN
+        print("NNN -> %X\n", opcode & 0x0FFF);
         pc = opcode & 0x0FFF;
         break;
     case 0x2000:
@@ -313,6 +314,7 @@ void Chip8::emulateCycle() {
             break;
         case 0x0055:
             // FX55
+            print("----> 0x%X\n", opcode);
             for (int i = 0; i <= ((opcode & 0x0F00) >> 8); i++) {
                 memory[I + i] = reg[i];
             }
@@ -321,6 +323,7 @@ void Chip8::emulateCycle() {
             break;
         case 0x0065:
             // FX65
+            print("----> 0x%X\n", opcode);
             for (int i = 0; i <= ((opcode & 0x0F00) >> 8); i++) {
                 reg[i] = memory[I + i];
             }
@@ -328,8 +331,6 @@ void Chip8::emulateCycle() {
             pc += 2;
             break;
         }
-        break;
-        
     default:
         print("Error! Unknown opcode 0x%X\n", opcode & 0x0FFF);
         break;

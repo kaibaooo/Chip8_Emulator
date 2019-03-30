@@ -40,7 +40,7 @@ public:
     unsigned char memory[4096];
     //CPU register
     unsigned char reg[16];
-    //Index register
+    //Index register 2byte
     unsigned short I;
     //program counter
     unsigned short pc;
