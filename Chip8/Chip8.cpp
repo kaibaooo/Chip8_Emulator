@@ -12,7 +12,7 @@ void Chip8::initialize() {
     opcode = 0;
     I = 0;
     pc = 0x200;
-    sp = 0;
+    sp = -1;
     drawFlag = true;
     delay_timer = 0;
     sound_timer = 0;
@@ -43,6 +43,7 @@ void Chip8::emulateCycle() {
     // fetch
     opcode = memory[pc] << 8 | memory[pc + 1];
     print("0x%X\n", opcode);
+    print("PC : 0x%X\n", pc);
     // decode
     switch (opcode & 0xF000) {
     case 0x0000:
@@ -58,8 +59,8 @@ void Chip8::emulateCycle() {
         case 0x000E:
             // 00EE
             // return; 
-            sp--;
             pc = stack[sp];
+            sp--;
             pc += 2;
             break;
         default:
@@ -74,8 +75,8 @@ void Chip8::emulateCycle() {
         break;
     case 0x2000:
         // 2NNNN call subroutine at NNN
-        stack[sp] = pc; //store current runtine
         sp++;
+        stack[sp] = pc; //store current runtine
         pc = opcode & 0x0FFF;
         break;
     case 0x3000:
@@ -210,7 +211,7 @@ void Chip8::emulateCycle() {
         break;
     case 0xC000:
         // CXNN
-        reg[(opcode & 0x0F00) >> 8] = (rand() % 256) & reg[(opcode & 0x00FF)];
+        reg[(opcode & 0x0F00) >> 8] = (rand() % 0xFF) & (opcode & 0x00FF);
         pc += 2;
         break;
     case 0xD000:{
@@ -343,6 +344,7 @@ void Chip8::emulateCycle() {
             printf("BEEP!\n");
         sound_timer--;
     }
+    Sleep(16);
     
 }
 void Chip8::loadGame(const char *filename) {

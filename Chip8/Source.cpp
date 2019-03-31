@@ -6,7 +6,7 @@ Chip8 chip8;
 
 int main(int argc, char* argv[]) {
     chip8.initialize();
-    chip8.loadGame("Clock Program.ch8");
+    chip8.loadGame("BC_test_ROM.ch8");
     // freeglut init
     
     glutInit(&argc, argv);
