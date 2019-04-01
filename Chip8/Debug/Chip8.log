@@ -1,7 +1,7 @@
 ﻿  Source.cpp
-d:\github\chip8_emulator\chip8\source.cpp(72): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
-d:\github\chip8_emulator\chip8\source.cpp(73): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
-d:\github\chip8_emulator\chip8\source.cpp(74): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
-d:\github\chip8_emulator\chip8\source.cpp(75): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
+d:\github\chip8_emulator\chip8\source.cpp(41): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
+d:\github\chip8_emulator\chip8\source.cpp(42): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
+d:\github\chip8_emulator\chip8\source.cpp(43): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
+d:\github\chip8_emulator\chip8\source.cpp(44): warning C4244: '引數': 將 'double' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
   Chip8.vcxproj -> D:\Github\Chip8_Emulator\Debug\Chip8.exe
   複製了         1 個檔案。

@@ -43,7 +43,7 @@ void Chip8::emulateCycle() {
     // fetch
     opcode = memory[pc] << 8 | memory[pc + 1];
     print("0x%X\n", opcode);
-    print("PC : 0x%X\n", pc);
+    //print("PC : 0x%X\n", pc);
     // decode
     switch (opcode & 0xF000) {
     case 0x0000:
@@ -70,7 +70,7 @@ void Chip8::emulateCycle() {
         break;
     case 0x1000:
         // 1NNN goto NNN
-        print("NNN -> %X\n", opcode & 0x0FFF);
+        //print("NNN -> %X\n", opcode & 0x0FFF);
         pc = opcode & 0x0FFF;
         break;
     case 0x2000:
@@ -161,12 +161,17 @@ void Chip8::emulateCycle() {
             break;
         case 0x0006:
             // 8XY6 Vx>>=1
-            if (reg[(opcode & 0x0F00) >> 8] & 0x1 == 0x1) {
+            // If the least-significant bit of Vx is 1, then VF is set to 1, otherwise 0. Then Vx is divided by 2.
+            //print("8XY6 V%d is %d\n", (opcode & 0x0F00) >> 8, (reg[(opcode & 0x0F00) >> 8]));
+            if ((reg[(opcode & 0x0F00) >> 8] & 0x1) == 1) {
                 reg[0xF] = 0x1;
             }
             else {
-                reg[(opcode & 0x0F00) >> 8] >>= 1;
+                reg[0xF] = 0x0;
+                
             }
+            reg[(opcode & 0x0F00) >> 8] = reg[(opcode & 0x0F00) >> 8] >> 1;
+            //print("Set V%d to %d\n", (opcode & 0x0F00) >> 8, reg[(opcode & 0x0F00)]);
             /*
             reg[0xF] = reg[(opcode & 0x0F00) >> 8] & 0x0001;
             reg[(opcode & 0x0F00) >> 8] >>= 1;
@@ -175,22 +180,31 @@ void Chip8::emulateCycle() {
             break;
         case 0x0007:
             // 8XY7 Vx=Vy-Vx
-            if (reg[(opcode & 0x0F00) >> 8] > reg[(opcode & 0x00F0) >> 4]) {
-                reg[0xF] = 0;
+            if (reg[(opcode & 0x0F00) >> 8] < reg[(opcode & 0x00F0) >> 4]) {
+                reg[0xF] = 1;
             }
             else {
-                reg[0xF] = 1;
+                reg[0xF] = 0;
             }
             reg[(opcode & 0x0F00) >> 8] = reg[(opcode & 0x00F0) >> 4] - reg[(opcode & 0x0F00) >> 8];
             pc += 2;
             break;
         case 0x000E:
             // 8XYE Vx<<=1
-            reg[0xF] = reg[(opcode & 0x0F00) >> 8] & 0x80;
-            reg[(opcode & 0x0F00) >> 8] <<= 1;
+            //print("8XY6 V%d is %d\n", (opcode & 0x0F00) >> 8, (reg[(opcode & 0x0F00) >> 8]));
+            //print("And %d\n", (reg[(opcode & 0x0F00) >> 8] & 0x80) >> 0x7);
+            if (((reg[(opcode & 0x0F00) >> 8] & 0x80) >> 0x7) == 0x1) {
+                reg[0xF] = 0x1;
+            }
+            else {
+                reg[0xF] = 0x0;
+            }
+            // reg[0xF] = reg[(opcode & 0x0F00) >> 8] & 0x80;
+            reg[(opcode & 0x0F00) >> 8] = reg[(opcode & 0x0F00) >> 8] << 1;
             pc += 2;
             break;
         }
+        break;
     case 0x9000:
         // 9XY0 Skips the next instruction if VX doesn¡¦t equal VY
         if (reg[(opcode & 0x0F00) >> 8] != reg[(opcode & 0x00F0) >> 4]) {
@@ -207,7 +221,7 @@ void Chip8::emulateCycle() {
         break;
     case 0xB000:
         // BNNN Jumps to the address NNN plus V0.
-        pc = reg[0x0] + (opcode & 0x0FFF);
+        pc = (opcode & 0x0FFF) + reg[0x0];
         break;
     case 0xC000:
         // CXNN
@@ -308,43 +322,49 @@ void Chip8::emulateCycle() {
             break;
         case 0x0033:
             // FX33
+            print("-------------------------------------------------FX33\n");
             memory[I] = reg[(opcode & 0x0F00) >> 8] / 100;
-            memory[I + 1] = reg[(opcode & 0x0F00) >> 8] % 100 / 10;
+            memory[I + 1] = (reg[(opcode & 0x0F00) >> 8] / 10) % 10;
             memory[I + 2] = reg[(opcode & 0x0F00) >> 8] % 10;
             pc += 2;
             break;
         case 0x0055:
             // FX55
-            print("----> 0x%X\n", opcode);
+            //print("----> 0x%X\n", opcode);
+            //print("Copy reg to mem from V0 to V%d, in memory %d to %d\n", (opcode & 0x0F00) >> 8, I, I + ((opcode & 0x0F00) >> 8));
             for (int i = 0; i <= ((opcode & 0x0F00) >> 8); i++) {
                 memory[I + i] = reg[i];
             }
+            //print("I= %d + %d + %d\n", I, (opcode & 0x0F00) >> 8, 1);
             I += ((opcode & 0x0F00) >> 8) + 1;
+            //print("Current I is %d\n", I);
             pc += 2;
             break;
         case 0x0065:
             // FX65
             print("----> 0x%X\n", opcode);
+            print("Copy mem to reg from V0 to V%d, in memory %d to %d\n", (opcode & 0x0F00) >> 8, I, I + ((opcode & 0x0F00) >> 8));
             for (int i = 0; i <= ((opcode & 0x0F00) >> 8); i++) {
                 reg[i] = memory[I + i];
             }
+            print("I= %d + %d + %d\n", I, (opcode & 0x0F00) >> 8, 1);
             I += ((opcode & 0x0F00) >> 8) + 1;
+            print("Current I is %d\n", I);
             pc += 2;
             break;
         }
+        break;
     default:
         print("Error! Unknown opcode 0x%X\n", opcode & 0x0FFF);
         break;
     }
     // timer--
+    print("%d\n", delay_timer);
     if (delay_timer > 0)
         delay_timer--;
     if (sound_timer > 0) {
-        if (sound_timer == 1)
-            printf("BEEP!\n");
         sound_timer--;
     }
-    Sleep(16);
     
 }
 void Chip8::loadGame(const char *filename) {
@@ -382,24 +402,6 @@ void Chip8::renderTest() {
         printf("\n");
     }
     printf("\n");
-}
-void Chip8::OpenGLrender() {
-    glClear(GL_COLOR_BUFFER_BIT);
-    glColor3f(1.0, 1.0, 1.0);
-    for (int i = 0; i < 1280; i += 20) {
-        for (int j = 0; j < 640; j++) {
-            glBegin(GL_POLYGON); {
-                glVertex3f(-5.0 + j, 5.0 - i, 0.0); // The top left corner  
-                glVertex3f(wPx - 5 + j, 5.0 - i, 0.0); // The top right corner 
-                glVertex3f(-5.0 + j, 5 - hPx - i, 0.0); // The bottom left corner  
-                glVertex3f(wPx - 5 + j, 5 - hPx - i, 0.0); // The bottom right corner
-
-            }
-            glEnd();
-            glFlush();
-        }
-    }
-    
 }
 
 

@@ -2,11 +2,13 @@
 
 void OpenGLrender();
 void OpenGLInit();
+void controller(unsigned char, int, int);
+void controllerUP(unsigned char, int, int);
 Chip8 chip8;
 
 int main(int argc, char* argv[]) {
     chip8.initialize();
-    chip8.loadGame("BC_test_ROM.ch8");
+    chip8.loadGame("pong2.c8");
     // freeglut init
     
     glutInit(&argc, argv);
@@ -15,51 +17,18 @@ int main(int argc, char* argv[]) {
     glutInitWindowSize(1280, 640);
     glutCreateWindow("CHIP8");
     OpenGLInit();
+    glutKeyboardFunc(controller);
+    glutKeyboardUpFunc(controllerUP);
     glutDisplayFunc(OpenGLrender);
-    
-    // character test ROM
-    /*
-    int xInit = 0x1;
-    int yInit = 0;
-    for (unsigned char i = 0; i < 0x10; i++) {
-        
-        if (i == 0x9) {
-            xInit = 0x1;
-            yInit = 0x6;
-        }
-        // register 0 => x cord
-        chip8.memory[0x200 + i * 8] = 0x60;
-        chip8.memory[0x201 + i * 8] = xInit;
-        // register 1 => y cord
-        chip8.memory[0x202 + i * 8] = 0x61;
-        chip8.memory[0x203 + i * 8] = yInit;
-        // I
-        chip8.memory[0x204 + i * 8] = 0xA0;
-        chip8.memory[0x205 + i * 8] = 0x00 + 0x05 * i;
-        // print
-        chip8.memory[0x206 + i * 8] = 0xD0;
-        chip8.memory[0x207 + i * 8] = 0x15;
-        xInit += 0x5;
-    }
-    */
+    glutIdleFunc(OpenGLrender);
     glutMainLoop();
-    /*
-    for (;;) {
-        chip8.emulateCycle();
-        if (chip8.drawFlag) {
-            system("cls");
-            chip8.renderTest();
-            chip8.drawFlag = false;
-        }
-        
-    }
-    */
     system("pause");
     return 0;
 }
 
 void OpenGLrender() {
     chip8.emulateCycle();
+    Sleep(1);
     if (chip8.drawFlag) {
         glClear(GL_COLOR_BUFFER_BIT);
         glColor3f(1.0, 1.0, 1.0);
@@ -80,14 +49,19 @@ void OpenGLrender() {
                 }
 
             }
-            print("\n");
+            //print("\n");
         }
-        glFlush();
+        
+
+        //glFinish();
+        //glutSwapBuffers();
+        //glFlush();
+        glutSwapBuffers();
         chip8.drawFlag = false;
     }
     
     //print("OpenGLrender End\n");
-    glutPostRedisplay();
+    //glutPostRedisplay();
     return;
 }
 
@@ -98,4 +72,51 @@ void OpenGLInit() {
     glOrtho(-5, 5, -5, 5, 5, 15);
     glMatrixMode(GL_MODELVIEW);
     gluLookAt(0, 0, 10, 0, 0, 0, 0, 1, 0);
+}
+void controller(unsigned char key, int x, int y) {
+    //print("Press %d\n", key);
+    if (key == '1') chip8.key[0x1] = 1; // Press X mapping to 1
+    else if (key == '2') chip8.key[0x2] = 1; // Press 2 mapping to 2
+    else if (key == '3') chip8.key[0x3] = 1; // Press 3 mapping to 3
+    else if (key == '4') chip8.key[0xC] = 1; // Press 4 mapping to C
+
+    else if (key == 'q') chip8.key[0x4] = 1; // Press q mapping to 4
+    else if (key == 'w') chip8.key[0x5] = 1; // Press w mapping to 5
+    else if (key == 'e') chip8.key[0x6] = 1; // Press e mapping to 6
+    else if (key == 'r') chip8.key[0xD] = 1; // Press r mapping to D
+    
+    else if (key == 'a') chip8.key[0x7] = 1; // Press a mapping to 7
+    else if (key == 's') chip8.key[0x8] = 1; // Press s mapping to 8
+    else if (key == 'd') chip8.key[0x9] = 1; // Press d mapping to 9
+    else if (key == 'f') chip8.key[0xE] = 1; // Press f mapping to E
+    
+    else if (key == 'z') chip8.key[0xA] = 1; // Press z mapping to A
+    else if (key == 'x') chip8.key[0x0] = 1; // Press x mapping to 0
+    else if (key == 'c') chip8.key[0xB] = 1; // Press c mapping to B
+    else if (key == 'v') chip8.key[0xF] = 1; // Press v mapping to F
+    else return;
+
+}
+void controllerUP(unsigned char key, int x, int y) {
+    //print("Pressup %d\n", key);
+    if (key == '1') chip8.key[0x1] = 0; // Press X mapping to 1
+    else if (key == '2') chip8.key[0x2] = 0; // Press 2 mapping to 2
+    else if (key == '3') chip8.key[0x3] = 0; // Press 3 mapping to 3
+    else if (key == '4') chip8.key[0xC] = 0; // Press 4 mapping to C
+
+    else if (key == 'q') chip8.key[0x4] = 0; // Press q mapping to 4
+    else if (key == 'w') chip8.key[0x5] = 0; // Press w mapping to 5
+    else if (key == 'e') chip8.key[0x6] = 0; // Press e mapping to 6
+    else if (key == 'r') chip8.key[0xD] = 0; // Press r mapping to D
+
+    else if (key == 'a') chip8.key[0x7] = 0; // Press a mapping to 7
+    else if (key == 's') chip8.key[0x8] = 0; // Press s mapping to 8
+    else if (key == 'd') chip8.key[0x9] = 0; // Press d mapping to 9
+    else if (key == 'f') chip8.key[0xE] = 0; // Press f mapping to E
+
+    else if (key == 'z') chip8.key[0xA] = 0; // Press z mapping to A
+    else if (key == 'x') chip8.key[0x0] = 0; // Press x mapping to 0
+    else if (key == 'c') chip8.key[0xB] = 0; // Press c mapping to B
+    else if (key == 'v') chip8.key[0xF] = 0; // Press v mapping to F
+    else return;
 }
