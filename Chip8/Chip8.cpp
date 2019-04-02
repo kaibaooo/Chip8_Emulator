@@ -42,7 +42,7 @@ void Chip8::initialize() {
 void Chip8::emulateCycle() {
     // fetch
     opcode = memory[pc] << 8 | memory[pc + 1];
-    print("0x%X\n", opcode);
+    //print("0x%X\n", opcode);
     //print("PC : 0x%X\n", pc);
     // decode
     switch (opcode & 0xF000) {
@@ -322,7 +322,7 @@ void Chip8::emulateCycle() {
             break;
         case 0x0033:
             // FX33
-            print("-------------------------------------------------FX33\n");
+            //print("-------------------------------------------------FX33\n");
             memory[I] = reg[(opcode & 0x0F00) >> 8] / 100;
             memory[I + 1] = (reg[(opcode & 0x0F00) >> 8] / 10) % 10;
             memory[I + 2] = reg[(opcode & 0x0F00) >> 8] % 10;
@@ -342,14 +342,14 @@ void Chip8::emulateCycle() {
             break;
         case 0x0065:
             // FX65
-            print("----> 0x%X\n", opcode);
-            print("Copy mem to reg from V0 to V%d, in memory %d to %d\n", (opcode & 0x0F00) >> 8, I, I + ((opcode & 0x0F00) >> 8));
+            //print("----> 0x%X\n", opcode);
+            //print("Copy mem to reg from V0 to V%d, in memory %d to %d\n", (opcode & 0x0F00) >> 8, I, I + ((opcode & 0x0F00) >> 8));
             for (int i = 0; i <= ((opcode & 0x0F00) >> 8); i++) {
                 reg[i] = memory[I + i];
             }
-            print("I= %d + %d + %d\n", I, (opcode & 0x0F00) >> 8, 1);
+            //print("I= %d + %d + %d\n", I, (opcode & 0x0F00) >> 8, 1);
             I += ((opcode & 0x0F00) >> 8) + 1;
-            print("Current I is %d\n", I);
+            //print("Current I is %d\n", I);
             pc += 2;
             break;
         }
@@ -359,10 +359,12 @@ void Chip8::emulateCycle() {
         break;
     }
     // timer--
-    print("%d\n", delay_timer);
+    //print("%d\n", delay_timer);
     if (delay_timer > 0)
         delay_timer--;
     if (sound_timer > 0) {
+        if (sound_timer == 1)
+            printf("BEEP!\n");
         sound_timer--;
     }
     
