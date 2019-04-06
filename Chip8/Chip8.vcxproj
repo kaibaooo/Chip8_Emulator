@@ -70,7 +70,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\Github\Chip8_Emulator\Chip8\freeglut\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Admin\Desktop\Chip8_Emulator\Chip8\freeglut\include;D:\Github\Chip8_Emulator\Chip8\freeglut\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>C:\Users\Admin\Desktop\Chip8_Emulator\Chip8\freeglut\include;D:\Github\Chip8_Emulator\Chip8\freeglut\include;$(IncludePath)</IncludePath>
@@ -97,7 +97,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>D:\Github\Chip8_Emulator\Chip8\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Admin\Desktop\Chip8_Emulator\Chip8\freeglut\lib;D:\Github\Chip8_Emulator\Chip8\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>Copy /Y "$(ProjectDir)freeglut\bin\freeglut.dll" "$(ProjectDir)"</Command>
