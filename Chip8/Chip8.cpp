@@ -1,8 +1,5 @@
 #include"Chip8.h"
 
-void init();
-void display();
-
 Chip8::Chip8() {
     
 }
@@ -89,7 +86,7 @@ void Chip8::emulateCycle() {
         }
         break;
     case 0x4000:
-        // 4XNN Skips the next instruction if VX doesn¡¦t equal NN.
+        // 4XNN Skips the next instruction if VX doesnï¿½ï¿½t equal NN.
         if (reg[(opcode & 0x0F00) >> 8] != (opcode & 0x00FF)) {
             pc += 4;
         }
@@ -206,7 +203,7 @@ void Chip8::emulateCycle() {
         }
         break;
     case 0x9000:
-        // 9XY0 Skips the next instruction if VX doesn¡¦t equal VY
+        // 9XY0 Skips the next instruction if VX doesnï¿½ï¿½t equal VY
         if (reg[(opcode & 0x0F00) >> 8] != reg[(opcode & 0x00F0) >> 4]) {
             pc += 4;
         }
@@ -270,7 +267,7 @@ void Chip8::emulateCycle() {
             break;
         case 0x00A1:
             // EXA1 if(key()!=Vx)    
-            // Skips the next instruction if the key stored in VX isn¡¦t pressed
+            // Skips the next instruction if the key stored in VX isnï¿½ï¿½t pressed
             if (key[reg[(opcode & 0x0F00) >> 8]] == 0) {
                 pc += 4;
             }
@@ -369,27 +366,36 @@ void Chip8::emulateCycle() {
     }
     
 }
-void Chip8::loadGame(const char *filename) {
+bool Chip8::loadGame(const char *filename) {
     initialize();
     print("Load Game : %s\n", filename);
+	// Load Game
     FILE *filePtr = fopen(filename, "rb");
-    // get file size
-    fseek(filePtr, 0L, SEEK_END);
-    long fileSize = ftell(filePtr);
+    if(filePtr == NULL){
+        printf("File is not found!\n");
+		return false;
+    }
+    // Get file size
+    fseek(filePtr, 0L, SEEK_END); // from END move 0 length
+    long fileSize = ftell(filePtr); // return number of bytes from the beginning of the file
     fseek(filePtr, 0L, SEEK_SET);
     print("File Size : %d\n", fileSize);
     if (fileSize > (4096 - 512)) {
         print("File is too big\n");
-        return;
+		return false;
     }
     char * buffer = (char*)malloc(sizeof(char) * fileSize);
     fread(buffer, 1, fileSize, filePtr);
     print("Loading file....\n");
+	if (buffer == NULL) {
+		printf("Memory error\n");
+		return false;
+	}
     for (int i = 0; i < fileSize; i++) {
         memory[512 + i] = buffer[i];
     }
-    print("Loaded!\n");
-    
+    print("ROM Loaded!\n");
+	return true;
 }
 void Chip8::renderTest() {
     for (int y = 0; y < 32; y++) {

@@ -8,20 +8,21 @@ Chip8 chip8;
 
 int main(int argc, char* argv[]) {
     chip8.initialize();
-    chip8.loadGame("ROM\\BC_test_ROM.ch8");
+    bool status = chip8.loadGame("ROM\\BC_test_ROM.chs8");
     // freeglut init
-    
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);
-    glutInitWindowPosition(100, 100);
-    glutInitWindowSize(1280, 640);
-    glutCreateWindow("CHIP8");
-    OpenGLInit();
-    glutKeyboardFunc(controller);
-    glutKeyboardUpFunc(controllerUP);
-    glutDisplayFunc(OpenGLrender);
-    glutIdleFunc(OpenGLrender);
-    glutMainLoop();
+	if (status) {
+		glutInit(&argc, argv);
+		glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);
+		glutInitWindowPosition(100, 100);
+		glutInitWindowSize(1280, 640);
+		glutCreateWindow("CHIP8");
+		OpenGLInit();
+		glutKeyboardFunc(controller);
+		glutKeyboardUpFunc(controllerUP);
+		glutDisplayFunc(OpenGLrender);
+		glutIdleFunc(OpenGLrender);
+		glutMainLoop();
+	}
     system("pause");
     return 0;
 }

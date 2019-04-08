@@ -58,7 +58,7 @@ public:
     
     Chip8();
     void initialize();
-    void loadGame(const char *);
+	bool loadGame(const char *);
     void emulateCycle();
     void setKeys();
     void OpenGLrender();
